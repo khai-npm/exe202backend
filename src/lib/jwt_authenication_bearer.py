@@ -1,10 +1,14 @@
 import time
+import os
+from dotenv import load_dotenv
 
 import jwt
 from passlib.context import CryptContext
 
-JWT_SECRET = "HACK_DUOC_KHONG_MA_VO"
-JWT_ALGORITHM = "HS256"
+load_dotenv()
+
+JWT_SECRET = os.getenv("JWT_SECRET")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -2,7 +2,10 @@ from datetime import datetime
 from beanie import init_beanie
 
 
+
 async def event_01_init_db():
+    import os
+
     from src.models.account import account
     from src.models.participant import participant
     from src.models.payment import payment
@@ -10,8 +13,10 @@ async def event_01_init_db():
     from src.models.task import task
     from src.models.token import token
     from motor.motor_asyncio import AsyncIOMotorClient
+    from src.database.get_db_instance import connection_string
 
-    db_instance = AsyncIOMotorClient("mongodb://localhost:27017/")
+
+    db_instance = AsyncIOMotorClient(connection_string)
     await init_beanie(
         database=db_instance["exe_bot"], document_models=[account, participant, payment,
                                                          server, task, token ]
