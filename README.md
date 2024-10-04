@@ -2,14 +2,14 @@
 
 To install the necessary packages and set up the project, follow these steps:
 
-1. Install `setuptools`:
+1. Install library pack:
     ```sh
-    py -m pip install setuptools
+    py -m pip install -r requirements.txt
     ```
 
-2. Set up the project:
+2. start up the project:
     ```sh
-    py setup.py
+    py run.py
     ```
 
 Good luck!
