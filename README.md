@@ -6,8 +6,15 @@ To install the necessary packages and set up the project, follow these steps:
     ```sh
     py -m pip install -r requirements.txt
     ```
+2. Create ".env" inside folder :
+    ```sh
+    JWT_SECRET = "String"
+    JWT_ALGORITHM = "HS256"
 
-2. start up the project:
+    CONNECTION_STRING = "mongodb://localhost:27017/"
+    ```
+
+3. start up the project:
     ```sh
     py run.py
     ```
