@@ -13,7 +13,7 @@ from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient
 from src.events.startup import events as startup_event
 
-
+bot_token = "MTI0MjE0NTY0NzM4MTk3MDk3NQ.G7jooM.sDG1zPvx0YOPFhsv-7Qg-JX2iOwfGmhHfdi90Y"
 async def run_db():
     db_instance = AsyncIOMotorClient("mongodb://localhost:27017/")
     await init_beanie(
@@ -113,10 +113,5 @@ async def on_disconnect():
 async def on_resumed():
     print("Bot resumed")
 
-
-
-
-# client.run('MTI0MjE0NTY0NzM4MTk3MDk3NQ.G7jooM.sDG1zPvx0YOPFhsv-7Qg-JX2iOwfGmhHfdi90Y')
-
 if __name__ == "__main__":
-    bot.run("MTI0MjE0NTY0NzM4MTk3MDk3NQ.G7jooM.sDG1zPvx0YOPFhsv-7Qg-JX2iOwfGmhHfdi90Y")
+    bot.run(bot_token)
