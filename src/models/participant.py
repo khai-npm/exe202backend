@@ -4,11 +4,7 @@ from fastapi import Form
 from pydantic import BaseModel
 
 class participant(Document):
-    server_id: str
-    redeem_token : str
-    server_owner : str
-    server_name : str
-    tasks : list[str]
+    discord_user_name : str
     class Settings:
         name = "participant"
 

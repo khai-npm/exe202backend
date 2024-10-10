@@ -1,7 +1,9 @@
 # This example requires the 'message_content' intent.
 import os
 import asyncio
+from prettytable import PrettyTable
 import datetime
+from tabulate import tabulate
 from beanie import init_beanie
 from schemas_for_bot.task_list_schema import task_list_schema
 from src.models.account import account
@@ -16,6 +18,7 @@ from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient
 from src.events.startup import events as startup_event
 from dotenv import load_dotenv
+from bson import ObjectId
 
 load_dotenv()
 
@@ -120,32 +123,47 @@ async def task(ctx, command : str, * , data : str = None):
                 result : list[task_list] = []
                 all_task =await task_list.find_all().to_list()
 
+                # for i in all_task:
+                #     new_true_result_data.task_id = str(i.id)
+                #     new_true_result_data.task_title = str(i.task_title)
+                #     true_result.append(new_true_result_data)
+
+
+                # sort_result = [[str(i.id), str(i.task_title)] for i in all_task]
+
+                # if not all_task: 
+                #     raise Exception("not any task to show !")
+
+                # header = ["id", "title"]
+                # table = tabulate(sort_result, header, tablefmt="github", stralign="center", numalign="center")
+
+
+                # final_result = "\n".join([str(obj) for obj in true_result])
+                # print(final_result)
+
+                table = PrettyTable()
+                table.field_names = ["id", "title"]
+                
                 for i in all_task:
-                    new_true_result_data.task_id = str(i.id)
-                    new_true_result_data.task_title = str(i.task_title)
-                    true_result.append(new_true_result_data)
+                    table.add_row([str(i.id), str(i.task_title)])
 
-                final_result = "\n".join([str(obj) for obj in true_result])
-                print(final_result)
 
-                if not final_result: 
-                    raise Exception("not any task to show !")
-                await ctx.send(final_result)
+                table_str = f"```\n{table}\n```"
 
-            case _:
-                raise Exception("command not found !")
-    except Exception as e:
-        await ctx.send(str(e))
+                await ctx.send(table_str)
 
-@bot.command()
-async def task_add(ctx, * , data : str):
-    try:
-        get_server_id = ctx.guild.id
-        current_server = await server.find_one(server.server_id==str(get_server_id))
-        if not current_server:
-            raise Exception("server must be registerd to use this feature ! use '?cber help' for more infomation")
-        author = ctx.author
-        new_task = task_list(task_title=data,
+            case "add":
+                if not data:
+                    raise Exception("command 'add' requrie new task's title")
+                
+
+                try:
+                    get_server_id = ctx.guild.id
+                    current_server = await server.find_one(server.server_id==str(get_server_id))
+                    if not current_server:
+                        raise Exception("server must be registerd to use this feature ! use '?cber help' for more infomation")
+                    author = ctx.author
+                    new_task = task_list(task_title=data,
                              server_id=str(get_server_id),
                              add_by=str(author.name),
                              task_desc="",
@@ -154,19 +172,86 @@ async def task_add(ctx, * , data : str):
                              participants=[],
                              success=False)
         
-        await new_task.insert()
-        current_server.tasks.append(str(new_task.id))
-        await current_server.save()
-        await ctx.send("task :" + data + " added successfully !")
+                    await new_task.insert()
+                    current_server.tasks.append(str(new_task.id))
+                    await current_server.save()
+                    await ctx.send("task :" + data + " added successfully !")
 
         
 
         
         
 
+                except Exception as e:
+                    # raise Exception(str(e))
+                    await ctx.send(str(e))
+            case "get":
+                get_task = await task_list.find_one(task_list.id == ObjectId(data))
+                if not get_task:
+                    raise Exception("'?cber task get <task_id>'. to see task id, view from ?cber task list")
+                
+                for i in get_task.participants:
+                    if ctx.author.name == i:
+                        raise Exception("you are already signed for this task")
+                
+                get_task.participants.append(str(ctx.author.name))
+                await get_task.save()
+
+                await ctx.send(f"[{ctx.author.name}] accepted task {str(get_task.id)} with title |[{get_task.task_title}]|")
+                
+
+    
+
+            case _:
+                raise Exception("command not found !")
     except Exception as e:
-        # raise Exception(str(e))
         await ctx.send(str(e))
+
+
+
+
+# @bot.command()
+# async def task_add(ctx, * , data : str):
+#     try:
+#         get_server_id = ctx.guild.id
+#         current_server = await server.find_one(server.server_id==str(get_server_id))
+#         if not current_server:
+#             raise Exception("server must be registerd to use this feature ! use '?cber help' for more infomation")
+#         author = ctx.author
+#         new_task = task_list(task_title=data,
+#                              server_id=str(get_server_id),
+#                              add_by=str(author.name),
+#                              task_desc="",
+#                              end_date=datetime.datetime.now(),
+#                              start_date=datetime.datetime.now(),
+#                              participants=[],
+#                              success=False)
+        
+#         await new_task.insert()
+#         current_server.tasks.append(str(new_task.id))
+#         await current_server.save()
+#         await ctx.send("task :" + data + " added successfully !")
+
+        
+
+        
+        
+
+    # except Exception as e:
+    #     # raise Exception(str(e))
+    #     await ctx.send(str(e))
+
+@bot.command()
+async def clear_msg(ctx, amount: int):
+    try:
+        if ctx.guild.owner is not ctx.author:
+            raise Exception("only owner can use this feature !")
+        
+        await ctx.channel.purge(limit=amount + 1)  # +1 to include the command message itself
+        await ctx.send("["+str(ctx.author.name) + "] deleted " + str(amount) + " messages !")
+    except Exception as e:
+        await ctx.send(str(e))
+
     
 
 
