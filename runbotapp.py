@@ -171,7 +171,7 @@ async def task_add(ctx, * , data : str):
 
 
 @bot.event
-async def on_member_join(self, member):
+async def on_member_join(member):
     guild = member.guild
     if guild.system_channel is not None:
         to_send = f'Welcome {member.mention} to {guild.name}!'
