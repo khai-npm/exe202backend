@@ -10,6 +10,11 @@ load_dotenv()
 JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
 
+print("using algo :" + JWT_ALGORITHM)
+
+if not JWT_ALGORITHM or not JWT_SECRET:
+    raise ValueError("JWT authorizer not found ! check .ENV for more info !")
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 

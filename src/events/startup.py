@@ -15,7 +15,9 @@ async def event_01_init_db():
     from motor.motor_asyncio import AsyncIOMotorClient
     from src.database.get_db_instance import connection_string
 
-
+    if not connection_string:
+        raise ValueError("connection string not found. check .ENV is exist or not! ")
+    print("Connected Database set: " + connection_string)
     db_instance = AsyncIOMotorClient(connection_string)
     await init_beanie(
         database=db_instance["exe_bot"], document_models=[account, participant, payment,

@@ -7,9 +7,18 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from src.models.account import account
 
+import os
+from dotenv import load_dotenv
+
 # DB_CONNECTION_STRING = app_settings.MONGODB_URL
-JWT_SECRET = "HACK_DUOC_KHONG_MA_VO"
-JWT_ALGORITHM = "HS256"
+load_dotenv()
+
+JWT_SECRET = os.getenv("JWT_SECRET")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
+
+print("using algo :" + JWT_ALGORITHM)
+if not JWT_ALGORITHM or not JWT_SECRET:
+    raise ValueError("JWT authorizer not found ! check .ENV for more info !")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/account/login")
 
