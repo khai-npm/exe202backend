@@ -28,6 +28,7 @@ connection_string = os.getenv("CONNECTION_STRING")
 
 
 async def run_db():
+    print("running db connection : " + connection_string)
     db_instance = AsyncIOMotorClient(connection_string)
     await init_beanie(
         database=db_instance["exe_bot"], document_models=[account, participant, payment,
@@ -49,8 +50,6 @@ class MyClient(discord.Client):
 
         if message.content == "tất cả tại":
             await message.reply('Trương Hải Minh', mention_author=True)
-
-
 
 
 
@@ -121,7 +120,7 @@ async def task(ctx, command : str, * , data : str = None):
                 true_result : list[task_list_schema] = []
                 new_true_result_data = task_list_schema(task_id="", task_title="")
                 result : list[task_list] = []
-                all_task =await task_list.find_all().to_list()
+                all_task =await task_list.find_many(task_list.server_id == str(ctx.guild.id)).to_list()
 
                 # for i in all_task:
                 #     new_true_result_data.task_id = str(i.id)
@@ -188,7 +187,8 @@ async def task(ctx, command : str, * , data : str = None):
             case "get":
                 get_task = await task_list.find_one(task_list.id == ObjectId(data))
                 if not get_task:
-                    raise Exception("'?cber task get <task_id>'. to see task id, view from ?cber task list")
+                    raise Exception("'?cber task get <task_id>'. to see task id, view "+
+                                    "from command '?cber task list'")
                 
                 for i in get_task.participants:
                     if ctx.author.name == i:
@@ -200,7 +200,12 @@ async def task(ctx, command : str, * , data : str = None):
                 await ctx.send(f"[{ctx.author.name}] accepted task {str(get_task.id)} with title |[{get_task.task_title}]|")
                 
 
-    
+            case "detail":
+                get_task = await task_list.find_one(task_list.id == ObjectId(data))
+                if not get_task:
+                    raise Exception("'?cber task detail <task_id>'. to see task id, view"+
+                                    " from command '?cber task list'")
+                await ctx.send(f"[{ctx.author.name}] accepted task {str(get_task.id)} with title |[{get_task.task_title}]|")
 
             case _:
                 raise Exception("command not found !")
