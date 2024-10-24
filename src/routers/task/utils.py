@@ -15,7 +15,7 @@ async def action_get_task_by_current_user(current_user : str):
             raise HTTPException(detail="not found user", status_code=404)
         
         user_discord = user.discord_user_id
-        target_server_list = await server.find_many(server.server_owner == user_discord).to_list()
+        target_server_list = await server.find_many(server.server_owner == user_discord).sort(-server.id).to_list()
 
         fdata : list[ServerTaskResponseSchema] = []
         for i in target_server_list:

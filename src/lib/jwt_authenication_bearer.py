@@ -41,10 +41,10 @@ def create_access_token(data: dict, expires_delta: float | None = None):
     if expires_delta:
         expire = time.time() + expires_delta
     else:
-        expire = time.time() + 600
+        expire = time.time() + 3600
     to_encode.update({"exp": expire})
     encoded_token = jwt.encode(to_encode, JWT_SECRET, JWT_ALGORITHM)
-    expire = expire + 600
+    expire = expire + 3600
     to_encode_2.update({"exp": time.time()})
     encoded_token_2 = jwt.encode(to_encode_2, JWT_SECRET, JWT_ALGORITHM)
     return {
@@ -60,7 +60,7 @@ def do_refresh_token(token : str | None = None):
 
     if payload['is_refresh_token'] is True:
 
-        payload['exp'] = time.time() + 600
+        payload['exp'] = time.time() + 3600
         payload['is_refresh_token'] = False
 
         encoded_token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
