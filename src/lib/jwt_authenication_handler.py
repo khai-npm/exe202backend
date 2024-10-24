@@ -36,6 +36,11 @@ async def jwt_validator(token: Annotated[str, Depends(oauth2_scheme)]):
              raise credentials_exception
         if payload['role'] is None:
              raise credentials_exception
+        if payload['role'] != 1:
+             raise credentials_exception
+        # if payload['status'] is False:
+        #      raise credentials_exception
+        # print(payload['status'])
         username: str = payload.get("username")
         expire_time: float = payload.get("exp")
         if username is None or expire_time <= time.time():
@@ -55,11 +60,14 @@ async def jwt_validator_admin(token: Annotated[str, Depends(oauth2_scheme)]):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])  
         if payload['is_refresh_token'] is True:
              raise credentials_exception
         if payload['role'] != 2:
              raise credentials_exception
+        # print(payload['status'])
+        # if payload['status'] is False:
+        #      raise credentials_exception
         username: str = payload.get("username")
         expire_time: float = payload.get("exp")
         if username is None or expire_time <= time.time():

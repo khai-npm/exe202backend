@@ -1,6 +1,8 @@
 from datetime import datetime
 from beanie import init_beanie
 
+from src.lib.hash_password import hash_password_util
+
 
 
 async def event_01_init_db():
@@ -25,13 +27,14 @@ async def event_01_init_db():
     )
     if await account.count() == 0:
         new_account = account(username="admin",
-                                password="1", 
+                                password=hash_password_util.HashPassword("1"), 
                                 create_date=datetime.now(), 
                                 wallet=0,
                                 token_id= [""],
                                 discord_user_id="",
                                 payment_info_id=[""],
-                                role = 2
+                                role = 2,
+                                status=True
                                 )
         await new_account.insert()
         print("insert new admin account")

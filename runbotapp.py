@@ -19,6 +19,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from src.events.startup import events as startup_event
 from dotenv import load_dotenv
 from bson import ObjectId
+from googletrans import Translator
 
 load_dotenv()
 
@@ -256,6 +257,40 @@ async def clear_msg(ctx, amount: int):
         await ctx.send("["+str(ctx.author.name) + "] deleted " + str(amount) + " messages !")
     except Exception as e:
         await ctx.send(str(e))
+
+@bot.command()
+async def trans(ctx, lang : str, * , data = None):
+    try:
+        if data is None:
+            raise Exception("no data to translate")
+        match lang:
+            case "vi":
+                print(str(data))
+
+                translator = Translator()
+                detection = translator.detect(str(data))
+                result = translator.translate(str(data), dest='vi')
+
+                msg = f"```Language Detected : {detection.lang}\n\n -> {result.text}  ```"
+                await ctx.send(msg)
+
+
+            case "en":
+                print(str(data))
+
+                translator = Translator()
+                detection = translator.detect(str(data))
+                result = translator.translate(str(data), dest='en')
+
+                msg = f"```Language Detected : {detection.lang}\n\n -> {result.text}  ```"
+                await ctx.send(msg)
+            case _:
+                await ctx.send("supportted language:\nvi - Tiếng Việt\nen - English")
+
+    except Exception as e:
+        raise Exception(e)
+        # await ctx.send(str(e))
+        
 
     
 

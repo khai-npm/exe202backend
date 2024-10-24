@@ -40,7 +40,8 @@ async def action_user_register(request_data : AccountRegisterSchema):
                                    token_id=[],
                                    discord_user_id=request_data.discord_userid,
                                    payment_info_id=[],
-                                   role=1
+                                   role=1,
+                                   status=True
                                    )
         
         await new_account.insert()
@@ -59,6 +60,9 @@ async def action_login(from_data : OAuth2PasswordRequestForm):
         user_in_db = await account.find_one(account.username == from_data.username)
         if not user_in_db:
             raise Exception("incorrect username or password!")
+        
+        if user_in_db.status is False:
+            raise Exception("inactive account")
         
         user_in_db = user_in_db.model_dump()
         

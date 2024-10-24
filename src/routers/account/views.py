@@ -5,6 +5,7 @@ from src.schemas.SignInFormSchema import AccountRegisterSchema
 from src.routers.account.utils import (action_user_register,
                                        action_login)
 from src.lib.jwt_authenication_handler import jwt_validator
+from src.models.account import account
 
 account_router = APIRouter(prefix="/api/account", tags=["Account"])
 @account_router.post("/register")
@@ -22,5 +23,6 @@ async def test_jwt():
     except Exception as e:
         return {"success" : False, 
                 "error" : str(e)}
+
     
 
