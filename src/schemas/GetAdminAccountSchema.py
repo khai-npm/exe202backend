@@ -9,6 +9,7 @@ class GetAdminAccountSchema(BaseModel):
     role : int
     discord_user_id : str
     payment_info_id : list[str]
+    status : bool
 
 class GetAdminDataAnalysis(BaseModel):
     active_user : int
