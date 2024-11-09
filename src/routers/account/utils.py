@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import Depends
+from bson import ObjectId
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from src.models.account import account
 from src.schemas.BodyResponseSchema import BodyResponseSchema
@@ -9,6 +10,7 @@ from src.schemas.SignInFormSchema import AccountRegisterSchema
 from src.lib.regular_expression import contains_special_character
 from src.lib.hash_password import hash_password_util
 from src.lib.jwt_authenication_bearer import authenticate_user,create_access_token
+from src.models.payment import payment
 
 async def action_user_register(request_data : AccountRegisterSchema):
     try:
@@ -76,4 +78,18 @@ async def action_login(from_data : OAuth2PasswordRequestForm):
     except Exception as e:
         return BodyResponseSchema(success=False, error=str(e))
         
+async def action_get_payment_info_by_user(current_user : str):
+    user = await account.find_one(account.username == current_user)
+    if not user:
+        raise HTTPException(detail="user not found", status_code=401)
+    
+    result : list[payment] = []
+    for payment_id in user.payment_info_id:
+        get_payment_info = await payment.find_one(payment.id == ObjectId(payment_id))
+        result.append(get_payment_info)
+
+    result.reverse()
+
+    return result
+
 

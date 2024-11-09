@@ -1,10 +1,11 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from src.schemas.BodyResponseSchema import BodyResponseSchema
 from src.schemas.SignInFormSchema import AccountRegisterSchema
-from src.routers.account.utils import (action_user_register,
+from src.routers.account.utils import (action_get_payment_info_by_user, action_user_register,
                                        action_login)
-from src.lib.jwt_authenication_handler import jwt_validator
+from src.lib.jwt_authenication_handler import get_current_user, jwt_validator
 from src.models.account import account
 
 account_router = APIRouter(prefix="/api/account", tags=["Account"])
@@ -23,6 +24,11 @@ async def test_jwt():
     except Exception as e:
         return {"success" : False, 
                 "error" : str(e)}
+    
+@account_router.get("/payment", response_model=BodyResponseSchema, dependencies=[Depends(jwt_validator)])
+async def get_payment_info(current_user : str = Depends(get_current_user)):
+    # return [await action_get_payment_info_by_user(current_user)]
+    return {"data" : [await action_get_payment_info_by_user(current_user)]}
 
     
 

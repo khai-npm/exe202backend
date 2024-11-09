@@ -7,6 +7,7 @@ class payment(Document):
     payment_date : datetime
     payment_ammount : float
     payment_code : str
+    username : str
     status : int = 0
     class Settings:
         name = "system_bill"
